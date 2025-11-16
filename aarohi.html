@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I Love You Aarohi</title>
+
+<style>
+body{
+  margin:0;
+  background:#0a0f1a;
+  overflow:hidden;
+  font-family:Arial;
+  color:white;
+}
+
+/* START + ROUND SCREEN */
+#startScreen, #roundScreen{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+
+.grid{
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns:repeat(10,1fr);
+  gap:6px;
+  padding:15px;
+}
+
+.heart{
+  font-size:22px;
+}
+
+#openBtn{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  padding:15px 30px;
+  font-size:20px;
+  background:#ff6b81;
+  border:none;
+  border-radius:10px;
+  color:white;
+  box-shadow:0 0 15px #ff6b81;
+  animation: glowBtn 2s infinite ease-in-out;
+}
+
+@keyframes glowBtn {
+  0% {box-shadow:0 0 10px #ff6b81;}
+  50% {box-shadow:0 0 25px #ff6b81;}
+  100% {box-shadow:0 0 10px #ff6b81;}
+}
+
+#roundScreen{ display:none; }
+
+.roundBox{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  margin:15px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:4px;
+  padding:10px;
+  backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,0.3);
+  animation: boxPop 1s ease;
+}
+
+@keyframes boxPop{
+  0%{transform:scale(0);}
+  100%{transform:scale(1);}
+}
+
+.smallHeart{
+  font-size:20px;
+  cursor:pointer;
+  transition: transform 0.2s;
+}
+.smallHeart:active{
+  transform:scale(1.4);
+}
+
+/* MESSAGE BOX */
+#msgBox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  display:none;
+}
+
+.msg{
+  background: linear-gradient(135deg, #ff4b7d, #ff80a8);
+  color:white;
+  padding:25px 40px;
+  font-size:30px;
+  border-radius:20px;
+  font-weight:bold;
+  text-shadow:0 0 10px white;
+  animation: pop 0.6s ease-out, pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pop {
+  0% {transform:scale(0); opacity:0;}
+  60% {transform:scale(1.2); opacity:1;}
+  100% {transform:scale(1);}
+}
+
+@keyframes pulse {
+  0% {transform: scale(1);}
+  50% {transform: scale(1.06);}
+  100% {transform: scale(1);}
+}
+
+/* HEART RAIN */
+.rainHeart{
+  position:fixed;
+  top:-20px;
+  font-size:25px;
+  animation: fall linear;
+  pointer-events:none;
+}
+
+@keyframes fall {
+  0% {transform: translateY(0) rotate(0deg);}
+  100% {transform: translateY(120vh) rotate(360deg);}
+}
+
+/* SPARKLE */
+.sparkle{
+  position:fixed;
+  width:10px;
+  height:10px;
+  background:white;
+  border-radius:50%;
+  opacity:0.8;
+  pointer-events:none;
+  animation: sparkleAnim 0.6s linear;
+}
+@keyframes sparkleAnim{
+  0%{transform:scale(0);}
+  50%{transform:scale(1.8); opacity:1;}
+  100%{transform:scale(0); opacity:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="startScreen">
+  <div class="grid" id="bigGrid"></div>
+  <button id="openBtn">OPEN</button>
+</div>
+
+<!-- ROUND SCREEN -->
+<div id="roundScreen">
+  <div style="display:flex; flex-wrap:wrap; justify-content:center;">
+    <div class="roundBox"></div>
+    <div class="roundBox"></div>
+    <div class="roundBox"></div>
+    <div class="roundBox"></div>
+  </div>
+</div>
+
+<!-- MESSAGE BOX -->
+<div id="msgBox">
+  <div class="msg">I Love You Aarohi ❤️</div>
+</div>
+
+<script>
+/* 100 HEARTS */
+let big = document.getElementById("bigGrid");
+for(let i=0;i<100;i++){
+  let h=document.createElement("div");
+  h.className="heart";
+  h.textContent="❤️";
+  big.appendChild(h);
+}
+
+/* OPEN CLICK */
+document.getElementById("openBtn").addEventListener("click", openNow);
+document.getElementById("openBtn").addEventListener("touchstart", openNow);
+
+function openNow(){
+  document.getElementById("startScreen").style.display="none";
+  document.getElementById("roundScreen").style.display="flex";
+
+  // ADD 20 MINI HEARTS
+  document.querySelectorAll(".roundBox").forEach(box=>{
+    for(let i=0;i<20;i++){
+      let h=document.createElement("div");
+      h.className="smallHeart";
+      h.textContent="❤️";
+
+      h.addEventListener("click", e=>{ showMsg(); explodeHeart(e); sparkle(e); });
+      h.addEventListener("touchstart", e=>{ showMsg(); explodeHeart(e); sparkle(e); });
+
+      box.appendChild(h);
+    }
+  });
+}
+
+/* MESSAGE BOX */
+function showMsg(){
+  let msg = document.getElementById("msgBox");
+  msg.style.display="flex";
+  setTimeout(()=>{ msg.style.display="none"; },2000);
+}
+
+/* HEART EXPLOSION */
+function explodeHeart(e){
+  for(let i=0;i<8;i++){
+    let h=document.createElement("div");
+    h.textContent="❤️";
+    h.style.position="fixed";
+    h.style.left=e.clientX+"px";
+    h.style.top=e.clientY+"px";
+    h.style.fontSize="20px";
+    h.style.transition="1s";
+    document.body.appendChild(h);
+
+    setTimeout(()=>{
+      h.style.transform=`translate(${Math.random()*200-100}px, ${Math.random()*200-100}px)`;
+      h.style.opacity="0";
+    },10);
+
+    setTimeout(()=>{h.remove();},1100);
+  }
+}
+
+/* SPARKLE EFFECT */
+function sparkle(e){
+  let s=document.createElement("div");
+  s.className="sparkle";
+  s.style.left=e.clientX+"px";
+  s.style.top=e.clientY+"px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),600);
+}
+
+/* HEART RAIN EVERY 300ms */
+setInterval(()=>{
+  let h=document.createElement("div");
+  h.className="rainHeart";
+  h.textContent="❤️";
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration= 4 + Math.random()*3 + "s";
+  document.body.appendChild(h);
+
+  setTimeout(()=>h.remove(),8000);
+},300);
+</script>
+
+</body>
+</html>
